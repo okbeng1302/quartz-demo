@@ -1,5 +1,8 @@
 package com.xiaobai.scheduler;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
@@ -20,8 +23,12 @@ import com.xiaobai.job.HelloJob;
  */
 public class CronTriggerTest {
 
-	public static void main(String[] args) throws SchedulerException {
+	public static void main(String[] args) throws SchedulerException, InterruptedException {
 
+		
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		System.out.println("Current time is :" + sdf.format(date));
 		// 创建 JobDetail 实例 ，与 HelloJob class 绑定
 
 		JobDetail jobDetail = JobBuilder.newJob(HelloJob.class)
@@ -33,25 +40,33 @@ public class CronTriggerTest {
 				.withSchedule(CronScheduleBuilder.cronSchedule("* * * * * ? *"))
 				.build();
 		/*
-		 * 1. 2018 年内每天 10 点 15 分执行
-		 * 		0 15 10 ？ * * 2018
-		 * 2. 每天的 14:00-14:59:55，18:00-18:59:55 ,每五秒钟执行一次
-		 * 		0/5 * 14,18 * * ?
-		 * 3. 每月的周一至周五的上午 10:15 开始执行
-		 * 		0 15 10 ? * MON-FRI
-		 * 4. 每月的第三周的星期五开始触发
-		 * 		0 15 10 ？ * 6#3
-		 * 5. 从 2017-2018 年每月最后一周的星期五的 10:15分触发
-		 * 		0 15 10 ？ 6L 2017-2018
+		 * 1. 2018 年内每天 10 点 15 分执行 0 15 10 ？ * * 2018 2. 每天的
+		 * 14:00-14:59:55，18:00-18:59:55 ,每五秒钟执行一次 0/5 * 14,18 * * ? 3.
+		 * 每月的周一至周五的上午 10:15 开始执行 0 15 10 ? * MON-FRI 4. 每月的第三周的星期五开始触发 0 15 10
+		 * ？ * 6#3 5. 从 2017-2018 年每月最后一周的星期五的 10:15分触发 0 15 10 ？ 6L 2017-2018
 		 */
-		
+
 		// 创建 Scheduler 实例
 		SchedulerFactory sf = new StdSchedulerFactory();
 
 		Scheduler sch = sf.getScheduler();
 		sch.start();
-		sch.scheduleJob(jobDetail, trigger);
+//		sch.scheduleJob(jobDetail, trigger);
 
+		System.out.println("Scheduler time is:"
+				+ sdf.format(sch.scheduleJob(jobDetail, trigger)));
+		// scheduler 执行  2 秒钟后 ，挂起
+		Thread.sleep(2000L);
+//		sch.standby();
+		
+		/*
+		 * shutdown(true) 所有任务执行完后 结束
+		 * shutdown(false) 立马结束
+		 */
+		
+		// scheduler 挂起 3 秒钟后 ，重新执行
+		Thread.sleep(3000L);
+//		sch.start();
 	}
 
 }

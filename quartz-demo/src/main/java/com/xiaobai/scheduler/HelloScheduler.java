@@ -17,7 +17,7 @@ import com.xiaobai.job.HelloJob;
 
 public class HelloScheduler {
 
-	public static void main(String args[]) throws SchedulerException {
+	public static void main(String args[]) throws SchedulerException, InterruptedException {
 
 		// 创建 JobDetail 实例 ，与 HelloJob class 绑定
 
@@ -74,7 +74,8 @@ public class HelloScheduler {
 		Scheduler sch = sf.getScheduler();
 		sch.start();
 		sch.scheduleJob(jobDetail, trigger);
-
+		
+		
 	}
 
 }
